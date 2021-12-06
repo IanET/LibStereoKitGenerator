@@ -6,7 +6,8 @@ using CEnum
 # Automatically generated file - do not edit
 #
 
-StereoKitC = "StereoKitC.dll"
+StereoKitC = joinpath(@__DIR__, "StereoKitC.dll")
+
 
 const uint64_t = Culonglong
 
