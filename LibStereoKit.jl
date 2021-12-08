@@ -2756,12 +2756,4 @@ const SK_VERSION_PRERELEASE = 0
 
 const SK_VERSION_ID = ((uint64_t(SK_VERSION_MAJOR) << 48 | uint64_t(SK_VERSION_MINOR) << 32) | uint64_t(SK_VERSION_PATCH) << 16) | uint64_t(SK_VERSION_PRERELEASE)
 
-# exports
-const PREFIXES = ["sk_"]
-for name in names(@__MODULE__; all=true), prefix in PREFIXES
-    if startswith(string(name), prefix)
-        @eval export $name
-    end
-end
-
 end # module

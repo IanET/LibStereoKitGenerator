@@ -2,6 +2,6 @@
 library_name = "StereoKitC"
 output_file_path = "./LibStereoKit.jl"
 module_name = "LibStereoKit"
-export_symbol_prefixes = ["sk_"]
+# export_symbol_prefixes = ["sk_"]
 output_ignorelist = ["SK_API", "SK_API_S", "SK_VERSION"]
 prologue_file_path = "./prologue.jl"
