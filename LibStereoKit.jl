@@ -6,7 +6,7 @@ using CEnum
 # Automatically generated file - do not edit
 #
 
-StereoKitC = joinpath(@__DIR__, "StereoKitC.dll")
+const StereoKitC = joinpath(@__DIR__, "StereoKitC.dll")
 
 function __init__()
     # TODO - make a proper 'artifact'
