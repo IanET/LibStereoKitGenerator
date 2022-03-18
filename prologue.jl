@@ -1,8 +1,8 @@
 # 
-# Automatically generated file - do not edit
+# Automatically generated file
 #
 
-StereoKitC = joinpath(@__DIR__, "StereoKitC.dll")
+StereoKitC = joinpath(@__DIR__, "runtimes\\win-x64\\native\\StereoKitC.dll")
 
 function __init__()
     # TODO - make a proper 'artifact'
