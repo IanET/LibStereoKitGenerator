@@ -5,13 +5,9 @@ using CEnum
 # 
 # Automatically generated file
 #
+using Pkg.Artifacts
 
-StereoKitC = joinpath(@__DIR__, "StereoKitC\\runtimes\\win-x64\\native\\StereoKitC.dll")
-
-function __init__()
-    # TODO - make a proper 'artifact'
-    chmod(StereoKitC, filemode(StereoKitC) | 0o755) # dll needs to executable
-end
+StereoKitC = joinpath(artifact"StereoKitC", "StereoKitC\\runtimes\\win-x64\\native\\StereoKitC.dll")
 
 
 const uint64_t = Culonglong
