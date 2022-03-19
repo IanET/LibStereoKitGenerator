@@ -7,7 +7,7 @@ using CEnum
 #
 using Pkg.Artifacts
 
-StereoKitC = joinpath(artifact"StereoKitC", "StereoKitC\\runtimes\\win-x64\\native\\StereoKitC.dll")
+StereoKitC = joinpath(artifact"StereoKitC", "win-x64\\native\\StereoKitC.dll")
 
 
 const uint64_t = Culonglong
