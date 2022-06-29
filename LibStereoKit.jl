@@ -72,6 +72,27 @@ end
     render_layer_all_regular = 1023
 end
 
+@cenum app_focus_::UInt32 begin
+    app_focus_active = 0
+    app_focus_background = 1
+    app_focus_hidden = 2
+end
+
+@cenum asset_state_::Int32 begin
+    asset_state_error_unsupported = -3
+    asset_state_error_not_found = -2
+    asset_state_error = -1
+    asset_state_none = 0
+    asset_state_loading = 1
+    asset_state_loaded_meta = 2
+    asset_state_loaded = 3
+end
+
+@cenum memory_::UInt32 begin
+    memory_reference = 0
+    memory_copy = 1
+end
+
 struct sk_settings_t
     app_name::Ptr{Cchar}
     assets_folder::Ptr{Cchar}
@@ -87,6 +108,7 @@ struct sk_settings_t
     flatscreen_width::Int32
     flatscreen_height::Int32
     disable_flatscreen_mr_sim::bool32_t
+    disable_unfocused_sleep::bool32_t
     android_java_vm::Ptr{Cvoid}
     android_activity::Ptr{Cvoid}
 end
@@ -115,12 +137,12 @@ function sk_set_window_xam(window)
     ccall((:sk_set_window_xam, StereoKitC), Cvoid, (Ptr{Cvoid},), window)
 end
 
-# no prototype is found for this function at stereokit.h:147:22, please use with caution
+# no prototype is found for this function at stereokit.h:317:22, please use with caution
 function sk_shutdown()
     ccall((:sk_shutdown, StereoKitC), Cvoid, ())
 end
 
-# no prototype is found for this function at stereokit.h:148:22, please use with caution
+# no prototype is found for this function at stereokit.h:318:22, please use with caution
 function sk_quit()
     ccall((:sk_quit, StereoKitC), Cvoid, ())
 end
@@ -129,67 +151,80 @@ function sk_step(app_update)
     ccall((:sk_step, StereoKitC), bool32_t, (Ptr{Cvoid},), app_update)
 end
 
-# no prototype is found for this function at stereokit.h:150:22, please use with caution
+function sk_run(app_update, app_shutdown)
+    ccall((:sk_run, StereoKitC), Cvoid, (Ptr{Cvoid}, Ptr{Cvoid}), app_update, app_shutdown)
+end
+
+function sk_run_data(app_update, update_data, app_shutdown, shutdown_data)
+    ccall((:sk_run_data, StereoKitC), Cvoid, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{Cvoid}), app_update, update_data, app_shutdown, shutdown_data)
+end
+
+# no prototype is found for this function at stereokit.h:322:22, please use with caution
 function sk_active_display_mode()
     ccall((:sk_active_display_mode, StereoKitC), display_mode_, ())
 end
 
-# no prototype is found for this function at stereokit.h:151:22, please use with caution
+# no prototype is found for this function at stereokit.h:323:22, please use with caution
 function sk_get_settings()
     ccall((:sk_get_settings, StereoKitC), sk_settings_t, ())
 end
 
-# no prototype is found for this function at stereokit.h:152:22, please use with caution
+# no prototype is found for this function at stereokit.h:324:22, please use with caution
 function sk_system_info()
     ccall((:sk_system_info, StereoKitC), system_info_t, ())
 end
 
-# no prototype is found for this function at stereokit.h:153:22, please use with caution
+# no prototype is found for this function at stereokit.h:325:22, please use with caution
 function sk_version_name()
     ccall((:sk_version_name, StereoKitC), Ptr{Cchar}, ())
 end
 
-# no prototype is found for this function at stereokit.h:154:22, please use with caution
+# no prototype is found for this function at stereokit.h:326:22, please use with caution
 function sk_version_id()
     ccall((:sk_version_id, StereoKitC), uint64_t, ())
 end
 
-# no prototype is found for this function at stereokit.h:158:22, please use with caution
+# no prototype is found for this function at stereokit.h:327:22, please use with caution
+function sk_app_focus()
+    ccall((:sk_app_focus, StereoKitC), app_focus_, ())
+end
+
+# no prototype is found for this function at stereokit.h:331:22, please use with caution
 function time_getf_unscaled()
     ccall((:time_getf_unscaled, StereoKitC), Cfloat, ())
 end
 
-# no prototype is found for this function at stereokit.h:159:22, please use with caution
+# no prototype is found for this function at stereokit.h:332:22, please use with caution
 function time_get_unscaled()
     ccall((:time_get_unscaled, StereoKitC), Cdouble, ())
 end
 
-# no prototype is found for this function at stereokit.h:160:22, please use with caution
+# no prototype is found for this function at stereokit.h:333:22, please use with caution
 function time_getf()
     ccall((:time_getf, StereoKitC), Cfloat, ())
 end
 
-# no prototype is found for this function at stereokit.h:161:22, please use with caution
+# no prototype is found for this function at stereokit.h:334:22, please use with caution
 function time_get()
     ccall((:time_get, StereoKitC), Cdouble, ())
 end
 
-# no prototype is found for this function at stereokit.h:162:22, please use with caution
+# no prototype is found for this function at stereokit.h:335:22, please use with caution
 function time_elapsedf_unscaled()
     ccall((:time_elapsedf_unscaled, StereoKitC), Cfloat, ())
 end
 
-# no prototype is found for this function at stereokit.h:163:22, please use with caution
+# no prototype is found for this function at stereokit.h:336:22, please use with caution
 function time_elapsed_unscaled()
     ccall((:time_elapsed_unscaled, StereoKitC), Cdouble, ())
 end
 
-# no prototype is found for this function at stereokit.h:164:22, please use with caution
+# no prototype is found for this function at stereokit.h:337:22, please use with caution
 function time_elapsedf()
     ccall((:time_elapsedf, StereoKitC), Cfloat, ())
 end
 
-# no prototype is found for this function at stereokit.h:165:22, please use with caution
+# no prototype is found for this function at stereokit.h:338:22, please use with caution
 function time_elapsed()
     ccall((:time_elapsed, StereoKitC), Cdouble, ())
 end
@@ -392,6 +427,22 @@ function matrix_trs(position, orientation, scale)
     ccall((:matrix_trs, StereoKitC), matrix, (Ptr{vec3}, Ptr{quat}, Ptr{vec3}), position, orientation, scale)
 end
 
+function matrix_t(position)
+    ccall((:matrix_t, StereoKitC), matrix, (vec3,), position)
+end
+
+function matrix_r(orientation)
+    ccall((:matrix_r, StereoKitC), matrix, (quat,), orientation)
+end
+
+function matrix_s(scale)
+    ccall((:matrix_s, StereoKitC), matrix, (vec3,), scale)
+end
+
+function matrix_ts(position, scale)
+    ccall((:matrix_ts, StereoKitC), matrix, (vec3, vec3), position, scale)
+end
+
 function matrix_trs_out(out_result, position, orientation, scale)
     ccall((:matrix_trs_out, StereoKitC), Cvoid, (Ptr{matrix}, Ptr{vec3}, Ptr{quat}, Ptr{vec3}), out_result, position, orientation, scale)
 end
@@ -440,6 +491,10 @@ function plane_from_ray(ray)
     ccall((:plane_from_ray, StereoKitC), plane_t, (ray_t,), ray)
 end
 
+function vec4_magnitude(a)
+    ccall((:vec4_magnitude, StereoKitC), Cfloat, (vec4,), a)
+end
+
 function vec3_magnitude(a)
     ccall((:vec3_magnitude, StereoKitC), Cfloat, (vec3,), a)
 end
@@ -478,6 +533,14 @@ end
 
 function vec2_distance(a, b)
     ccall((:vec2_distance, StereoKitC), Cfloat, (vec2, vec2), a, b)
+end
+
+function vec3_project(a, onto_b)
+    ccall((:vec3_project, StereoKitC), vec3, (vec3, vec3), a, onto_b)
+end
+
+function vec4_normalize(a)
+    ccall((:vec4_normalize, StereoKitC), vec4, (vec4,), a)
 end
 
 function vec3_normalize(a)
@@ -634,6 +697,10 @@ mutable struct _material_t end
 
 const material_t = Ptr{_material_t}
 
+mutable struct _material_buffer_t end
+
+const material_buffer_t = Ptr{_material_buffer_t}
+
 mutable struct _model_t end
 
 const model_t = Ptr{_model_t}
@@ -646,12 +713,16 @@ mutable struct _sound_t end
 
 const sound_t = Ptr{_sound_t}
 
+mutable struct _solid_t end
+
+const solid_t = Ptr{_solid_t}
+
 struct gradient_key_t
     color::color128
     position::Cfloat
 end
 
-# no prototype is found for this function at stereokit.h:411:19, please use with caution
+# no prototype is found for this function at stereokit.h:603:19, please use with caution
 function gradient_create()
     ccall((:gradient_create, StereoKitC), gradient_t, ())
 end
@@ -724,13 +795,17 @@ struct vert_t
     col::color32
 end
 
+function vert_create(position, normal, texture_coordinates, vertex_color)
+    ccall((:vert_create, StereoKitC), vert_t, (vec3, vec3, vec2, color32), position, normal, texture_coordinates, vertex_color)
+end
+
 const vind_t = UInt32
 
 function mesh_find(name)
     ccall((:mesh_find, StereoKitC), mesh_t, (Ptr{Cchar},), name)
 end
 
-# no prototype is found for this function at stereokit.h:454:17, please use with caution
+# no prototype is found for this function at stereokit.h:648:17, please use with caution
 function mesh_create()
     ccall((:mesh_create, StereoKitC), mesh_t, ())
 end
@@ -763,20 +838,32 @@ function mesh_get_keep_data(mesh)
     ccall((:mesh_get_keep_data, StereoKitC), bool32_t, (mesh_t,), mesh)
 end
 
+function mesh_set_data(mesh, vertices, vertex_count, indices, index_count, calculate_bounds)
+    ccall((:mesh_set_data, StereoKitC), Cvoid, (mesh_t, Ptr{vert_t}, Int32, Ptr{vind_t}, Int32, bool32_t), mesh, vertices, vertex_count, indices, index_count, calculate_bounds)
+end
+
 function mesh_set_verts(mesh, vertices, vertex_count, calculate_bounds)
     ccall((:mesh_set_verts, StereoKitC), Cvoid, (mesh_t, Ptr{vert_t}, Int32, bool32_t), mesh, vertices, vertex_count, calculate_bounds)
 end
 
-function mesh_get_verts(mesh, out_vertices, out_vertex_count)
-    ccall((:mesh_get_verts, StereoKitC), Cvoid, (mesh_t, Ptr{Ptr{vert_t}}, Ptr{Int32}), mesh, out_vertices, out_vertex_count)
+function mesh_get_verts(mesh, out_vertices, out_vertex_count, reference_mode)
+    ccall((:mesh_get_verts, StereoKitC), Cvoid, (mesh_t, Ptr{Ptr{vert_t}}, Ptr{Int32}, memory_), mesh, out_vertices, out_vertex_count, reference_mode)
+end
+
+function mesh_get_vert_count(mesh)
+    ccall((:mesh_get_vert_count, StereoKitC), Int32, (mesh_t,), mesh)
 end
 
 function mesh_set_inds(mesh, indices, index_count)
     ccall((:mesh_set_inds, StereoKitC), Cvoid, (mesh_t, Ptr{vind_t}, Int32), mesh, indices, index_count)
 end
 
-function mesh_get_inds(mesh, out_indices, out_index_count)
-    ccall((:mesh_get_inds, StereoKitC), Cvoid, (mesh_t, Ptr{Ptr{vind_t}}, Ptr{Int32}), mesh, out_indices, out_index_count)
+function mesh_get_inds(mesh, out_indices, out_index_count, reference_mode)
+    ccall((:mesh_get_inds, StereoKitC), Cvoid, (mesh_t, Ptr{Ptr{vind_t}}, Ptr{Int32}, memory_), mesh, out_indices, out_index_count, reference_mode)
+end
+
+function mesh_get_ind_count(mesh)
+    ccall((:mesh_get_ind_count, StereoKitC), Int32, (mesh_t,), mesh)
 end
 
 function mesh_set_draw_inds(mesh, index_count)
@@ -803,8 +890,12 @@ function mesh_update_skin(mesh, bone_transforms, bone_count)
     ccall((:mesh_update_skin, StereoKitC), Cvoid, (mesh_t, Ptr{matrix}, Int32), mesh, bone_transforms, bone_count)
 end
 
-function mesh_ray_intersect(mesh, model_space_ray, out_pt)
-    ccall((:mesh_ray_intersect, StereoKitC), bool32_t, (mesh_t, ray_t, Ptr{ray_t}), mesh, model_space_ray, out_pt)
+function mesh_ray_intersect(mesh, model_space_ray, out_pt, out_start_inds)
+    ccall((:mesh_ray_intersect, StereoKitC), bool32_t, (mesh_t, ray_t, Ptr{ray_t}, Ptr{UInt32}), mesh, model_space_ray, out_pt, out_start_inds)
+end
+
+function mesh_get_triangle(mesh, triangle_index, a, b, c)
+    ccall((:mesh_get_triangle, StereoKitC), bool32_t, (mesh_t, UInt32, Ptr{vert_t}, Ptr{vert_t}, Ptr{vert_t}), mesh, triangle_index, a, b, c)
 end
 
 function mesh_gen_plane(dimensions, plane_normal, plane_top_direction, subdivisions)
@@ -878,10 +969,6 @@ function tex_create(type, format)
     ccall((:tex_create, StereoKitC), tex_t, (tex_type_, tex_format_), type, format)
 end
 
-function tex_create_mem(file_data, file_size, srgb_data)
-    ccall((:tex_create_mem, StereoKitC), tex_t, (Ptr{Cvoid}, Csize_t, bool32_t), file_data, file_size, srgb_data)
-end
-
 function tex_create_color32(data, width, height, srgb_data)
     ccall((:tex_create_color32, StereoKitC), tex_t, (Ptr{color32}, Int32, Int32, bool32_t), data, width, height, srgb_data)
 end
@@ -890,24 +977,32 @@ function tex_create_color128(data, width, height, srgb_data)
     ccall((:tex_create_color128, StereoKitC), tex_t, (Ptr{color128}, Int32, Int32, bool32_t), data, width, height, srgb_data)
 end
 
-function tex_create_file(file, srgb_data)
-    ccall((:tex_create_file, StereoKitC), tex_t, (Ptr{Cchar}, bool32_t), file, srgb_data)
+function tex_create_mem(file_data, file_size, srgb_data, priority)
+    ccall((:tex_create_mem, StereoKitC), tex_t, (Ptr{Cvoid}, Csize_t, bool32_t, Int32), file_data, file_size, srgb_data, priority)
 end
 
-function tex_create_file_arr(files, file_count, srgb_data)
-    ccall((:tex_create_file_arr, StereoKitC), tex_t, (Ptr{Ptr{Cchar}}, Int32, bool32_t), files, file_count, srgb_data)
+function tex_create_file(file, srgb_data, priority)
+    ccall((:tex_create_file, StereoKitC), tex_t, (Ptr{Cchar}, bool32_t, Int32), file, srgb_data, priority)
 end
 
-function tex_create_cubemap_file(equirectangular_file, srgb_data, out_sh_lighting_info)
-    ccall((:tex_create_cubemap_file, StereoKitC), tex_t, (Ptr{Cchar}, bool32_t, Ptr{spherical_harmonics_t}), equirectangular_file, srgb_data, out_sh_lighting_info)
+function tex_create_file_arr(files, file_count, srgb_data, priority)
+    ccall((:tex_create_file_arr, StereoKitC), tex_t, (Ptr{Ptr{Cchar}}, Int32, bool32_t, Int32), files, file_count, srgb_data, priority)
 end
 
-function tex_create_cubemap_files(cube_face_file_xxyyzz, srgb_data, out_sh_lighting_info)
-    ccall((:tex_create_cubemap_files, StereoKitC), tex_t, (Ptr{Ptr{Cchar}}, bool32_t, Ptr{spherical_harmonics_t}), cube_face_file_xxyyzz, srgb_data, out_sh_lighting_info)
+function tex_create_cubemap_file(equirectangular_file, srgb_data, out_sh_lighting_info, priority)
+    ccall((:tex_create_cubemap_file, StereoKitC), tex_t, (Ptr{Cchar}, bool32_t, Ptr{spherical_harmonics_t}, Int32), equirectangular_file, srgb_data, out_sh_lighting_info, priority)
+end
+
+function tex_create_cubemap_files(cube_face_file_xxyyzz, srgb_data, out_sh_lighting_info, priority)
+    ccall((:tex_create_cubemap_files, StereoKitC), tex_t, (Ptr{Ptr{Cchar}}, bool32_t, Ptr{spherical_harmonics_t}, Int32), cube_face_file_xxyyzz, srgb_data, out_sh_lighting_info, priority)
 end
 
 function tex_set_id(texture, id)
     ccall((:tex_set_id, StereoKitC), Cvoid, (tex_t, Ptr{Cchar}), texture, id)
+end
+
+function tex_set_fallback(texture, fallback)
+    ccall((:tex_set_fallback, StereoKitC), Cvoid, (tex_t, tex_t), texture, fallback)
 end
 
 function tex_set_surface(texture, native_surface, type, native_fmt, width, height, surface_count)
@@ -920,6 +1015,18 @@ end
 
 function tex_release(texture)
     ccall((:tex_release, StereoKitC), Cvoid, (tex_t,), texture)
+end
+
+function tex_asset_state(texture)
+    ccall((:tex_asset_state, StereoKitC), asset_state_, (tex_t,), texture)
+end
+
+function tex_on_load(texture, on_load, context)
+    ccall((:tex_on_load, StereoKitC), Cvoid, (tex_t, Ptr{Cvoid}, Ptr{Cvoid}), texture, on_load, context)
+end
+
+function tex_on_load_remove(texture, on_load)
+    ccall((:tex_on_load_remove, StereoKitC), Cvoid, (tex_t, Ptr{Cvoid}), texture, on_load)
 end
 
 function tex_set_colors(texture, width, height, data)
@@ -936,6 +1043,10 @@ end
 
 function tex_get_data(texture, out_data, out_data_size)
     ccall((:tex_get_data, StereoKitC), Cvoid, (tex_t, Ptr{Cvoid}, Csize_t), texture, out_data, out_data_size)
+end
+
+function tex_gen_color(color, width, height, type, format)
+    ccall((:tex_gen_color, StereoKitC), tex_t, (color128, Int32, Int32, tex_type_, tex_format_), color, width, height, type, format)
 end
 
 function tex_gen_cubemap(gradient, gradient_dir, resolution, out_sh_lighting_info)
@@ -980,6 +1091,18 @@ end
 
 function tex_get_anisotropy(texture)
     ccall((:tex_get_anisotropy, StereoKitC), Int32, (tex_t,), texture)
+end
+
+function tex_set_loading_fallback(loading_texture)
+    ccall((:tex_set_loading_fallback, StereoKitC), Cvoid, (tex_t,), loading_texture)
+end
+
+function tex_set_error_fallback(error_texture)
+    ccall((:tex_set_error_fallback, StereoKitC), Cvoid, (tex_t,), error_texture)
+end
+
+function tex_get_cubemap_lighting(cubemap_texture)
+    ccall((:tex_get_cubemap_lighting, StereoKitC), spherical_harmonics_t, (tex_t,), cubemap_texture)
 end
 
 function font_find(id)
@@ -1062,16 +1185,24 @@ end
 end
 
 @cenum material_param_::UInt32 begin
-    material_param_float = 0
-    material_param_color128 = 1
-    material_param_vector = 2
-    material_param_matrix = 3
-    material_param_texture = 4
+    material_param_unknown = 0
+    material_param_float = 1
+    material_param_color128 = 2
+    material_param_vector2 = 3
+    material_param_vector3 = 4
+    material_param_vector4 = 5
+    material_param_vector = 5
+    material_param_matrix = 6
+    material_param_texture = 7
+    material_param_int = 8
+    material_param_int2 = 9
+    material_param_int3 = 10
+    material_param_int4 = 11
+    material_param_uint = 12
+    material_param_uint2 = 13
+    material_param_uint3 = 14
+    material_param_uint4 = 15
 end
-
-mutable struct _material_buffer_t end
-
-const material_buffer_t = Ptr{_material_buffer_t}
 
 function material_find(id)
     ccall((:material_find, StereoKitC), material_t, (Ptr{Cchar},), id)
@@ -1153,6 +1284,14 @@ function material_set_float(material, name, value)
     ccall((:material_set_float, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, Cfloat), material, name, value)
 end
 
+function material_set_vector2(material, name, value)
+    ccall((:material_set_vector2, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, vec2), material, name, value)
+end
+
+function material_set_vector3(material, name, value)
+    ccall((:material_set_vector3, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, vec3), material, name, value)
+end
+
 function material_set_color(material, name, color_gamma)
     ccall((:material_set_color, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, color128), material, name, color_gamma)
 end
@@ -1161,16 +1300,44 @@ function material_set_vector4(material, name, value)
     ccall((:material_set_vector4, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, vec4), material, name, value)
 end
 
-function material_set_vector3(material, name, value)
-    ccall((:material_set_vector3, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, vec3), material, name, value)
-end
-
-function material_set_vector2(material, name, value)
-    ccall((:material_set_vector2, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, vec2), material, name, value)
-end
-
 function material_set_vector(material, name, value)
     ccall((:material_set_vector, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, vec4), material, name, value)
+end
+
+function material_set_int(material, name, value)
+    ccall((:material_set_int, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, Int32), material, name, value)
+end
+
+function material_set_int2(material, name, value1, value2)
+    ccall((:material_set_int2, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, Int32, Int32), material, name, value1, value2)
+end
+
+function material_set_int3(material, name, value1, value2, value3)
+    ccall((:material_set_int3, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, Int32, Int32, Int32), material, name, value1, value2, value3)
+end
+
+function material_set_int4(material, name, value1, value2, value3, value4)
+    ccall((:material_set_int4, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, Int32, Int32, Int32, Int32), material, name, value1, value2, value3, value4)
+end
+
+function material_set_bool(material, name, value)
+    ccall((:material_set_bool, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, bool32_t), material, name, value)
+end
+
+function material_set_uint(material, name, value)
+    ccall((:material_set_uint, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, UInt32), material, name, value)
+end
+
+function material_set_uint2(material, name, value1, value2)
+    ccall((:material_set_uint2, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, UInt32, UInt32), material, name, value1, value2)
+end
+
+function material_set_uint3(material, name, value1, value2, value3)
+    ccall((:material_set_uint3, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, UInt32, UInt32, UInt32), material, name, value1, value2, value3)
+end
+
+function material_set_uint4(material, name, value1, value2, value3, value4)
+    ccall((:material_set_uint4, StereoKitC), Cvoid, (material_t, Ptr{Cchar}, UInt32, UInt32, UInt32, UInt32), material, name, value1, value2, value3, value4)
 end
 
 function material_set_matrix(material, name, value)
@@ -1273,20 +1440,20 @@ function text_make_style_mat(font, character_height, material, color_gamma)
     ccall((:text_make_style_mat, StereoKitC), text_style_t, (font_t, Cfloat, material_t, color128), font, character_height, material, color_gamma)
 end
 
-function text_add_at(text_utf8, transform, style, position, align, off_x, off_y, off_z)
-    ccall((:text_add_at, StereoKitC), Cvoid, (Ptr{Cchar}, Ptr{matrix}, text_style_t, text_align_, text_align_, Cfloat, Cfloat, Cfloat), text_utf8, transform, style, position, align, off_x, off_y, off_z)
+function text_add_at(text_utf8, transform, style, position, align, off_x, off_y, off_z, vertex_tint_linear)
+    ccall((:text_add_at, StereoKitC), Cvoid, (Ptr{Cchar}, Ptr{matrix}, text_style_t, text_align_, text_align_, Cfloat, Cfloat, Cfloat, color128), text_utf8, transform, style, position, align, off_x, off_y, off_z, vertex_tint_linear)
 end
 
-function text_add_at_16(text_utf16, transform, style, position, align, off_x, off_y, off_z)
-    ccall((:text_add_at_16, StereoKitC), Cvoid, (Ptr{char16_t}, Ptr{matrix}, text_style_t, text_align_, text_align_, Cfloat, Cfloat, Cfloat), text_utf16, transform, style, position, align, off_x, off_y, off_z)
+function text_add_at_16(text_utf16, transform, style, position, align, off_x, off_y, off_z, vertex_tint_linear)
+    ccall((:text_add_at_16, StereoKitC), Cvoid, (Ptr{char16_t}, Ptr{matrix}, text_style_t, text_align_, text_align_, Cfloat, Cfloat, Cfloat, color128), text_utf16, transform, style, position, align, off_x, off_y, off_z, vertex_tint_linear)
 end
 
-function text_add_in(text_utf8, transform, size, fit, style, position, align, off_x, off_y, off_z)
-    ccall((:text_add_in, StereoKitC), Cfloat, (Ptr{Cchar}, Ptr{matrix}, vec2, text_fit_, text_style_t, text_align_, text_align_, Cfloat, Cfloat, Cfloat), text_utf8, transform, size, fit, style, position, align, off_x, off_y, off_z)
+function text_add_in(text_utf8, transform, size, fit, style, position, align, off_x, off_y, off_z, vertex_tint_linear)
+    ccall((:text_add_in, StereoKitC), Cfloat, (Ptr{Cchar}, Ptr{matrix}, vec2, text_fit_, text_style_t, text_align_, text_align_, Cfloat, Cfloat, Cfloat, color128), text_utf8, transform, size, fit, style, position, align, off_x, off_y, off_z, vertex_tint_linear)
 end
 
-function text_add_in_16(text_utf16, transform, size, fit, style, position, align, off_x, off_y, off_z)
-    ccall((:text_add_in_16, StereoKitC), Cfloat, (Ptr{char16_t}, Ptr{matrix}, vec2, text_fit_, text_style_t, text_align_, text_align_, Cfloat, Cfloat, Cfloat), text_utf16, transform, size, fit, style, position, align, off_x, off_y, off_z)
+function text_add_in_16(text_utf16, transform, size, fit, style, position, align, off_x, off_y, off_z, vertex_tint_linear)
+    ccall((:text_add_in_16, StereoKitC), Cfloat, (Ptr{char16_t}, Ptr{matrix}, vec2, text_fit_, text_style_t, text_align_, text_align_, Cfloat, Cfloat, Cfloat, color128), text_utf16, transform, size, fit, style, position, align, off_x, off_y, off_z, vertex_tint_linear)
 end
 
 function text_size(text_utf8, style)
@@ -1310,8 +1477,6 @@ end
     solid_type_immovable = 1
     solid_type_unaffected = 2
 end
-
-const solid_t = Ptr{Cvoid}
 
 function solid_create(position, rotation, type)
     ccall((:solid_create, StereoKitC), solid_t, (Ptr{vec3}, Ptr{quat}, solid_type_), position, rotation, type)
@@ -1377,7 +1542,7 @@ function model_copy(model)
     ccall((:model_copy, StereoKitC), model_t, (model_t,), model)
 end
 
-# no prototype is found for this function at stereokit.h:732:22, please use with caution
+# no prototype is found for this function at stereokit.h:1196:22, please use with caution
 function model_create()
     ccall((:model_create, StereoKitC), model_t, ())
 end
@@ -1582,6 +1747,10 @@ function model_node_get_solid(model, node)
     ccall((:model_node_get_solid, StereoKitC), bool32_t, (model_t, model_node_id), model, node)
 end
 
+function model_node_get_visible(model, node)
+    ccall((:model_node_get_visible, StereoKitC), bool32_t, (model_t, model_node_id), model, node)
+end
+
 function model_node_get_material(model, node)
     ccall((:model_node_get_material, StereoKitC), material_t, (model_t, model_node_id), model, node)
 end
@@ -1604,6 +1773,10 @@ end
 
 function model_node_set_solid(model, node, solid)
     ccall((:model_node_set_solid, StereoKitC), Cvoid, (model_t, model_node_id, bool32_t), model, node, solid)
+end
+
+function model_node_set_visible(model, node, visible)
+    ccall((:model_node_set_visible, StereoKitC), Cvoid, (model_t, model_node_id, bool32_t), model, node, visible)
 end
 
 function model_node_set_material(model, node, material)
@@ -1667,6 +1840,10 @@ function sprite_draw(sprite, transform, color)
     ccall((:sprite_draw, StereoKitC), Cvoid, (sprite_t, Ptr{matrix}, color32), sprite, transform, color)
 end
 
+function sprite_draw_at(sprite, transform, anchor_position, color)
+    ccall((:sprite_draw_at, StereoKitC), Cvoid, (sprite_t, matrix, text_align_, color32), sprite, transform, anchor_position, color)
+end
+
 struct line_point_t
     pt::vec3
     thickness::Cfloat
@@ -1700,6 +1877,11 @@ end
     render_clear_all = 3
 end
 
+@cenum projection_::UInt32 begin
+    projection_perspective = 0
+    projection_ortho = 1
+end
+
 function render_set_clip(near_plane, far_plane)
     ccall((:render_set_clip, StereoKitC), Cvoid, (Cfloat, Cfloat), near_plane, far_plane)
 end
@@ -1708,7 +1890,24 @@ function render_set_fov(field_of_view_degrees)
     ccall((:render_set_fov, StereoKitC), Cvoid, (Cfloat,), field_of_view_degrees)
 end
 
-# no prototype is found for this function at stereokit.h:842:30, please use with caution
+function render_set_ortho_clip(near_plane, far_plane)
+    ccall((:render_set_ortho_clip, StereoKitC), Cvoid, (Cfloat, Cfloat), near_plane, far_plane)
+end
+
+function render_set_ortho_size(viewport_height_meters)
+    ccall((:render_set_ortho_size, StereoKitC), Cvoid, (Cfloat,), viewport_height_meters)
+end
+
+function render_set_projection(proj)
+    ccall((:render_set_projection, StereoKitC), Cvoid, (projection_,), proj)
+end
+
+# no prototype is found for this function at stereokit.h:1351:30, please use with caution
+function render_get_projection()
+    ccall((:render_get_projection, StereoKitC), projection_, ())
+end
+
+# no prototype is found for this function at stereokit.h:1352:30, please use with caution
 function render_get_cam_root()
     ccall((:render_get_cam_root, StereoKitC), matrix, ())
 end
@@ -1721,7 +1920,7 @@ function render_set_skytex(sky_texture)
     ccall((:render_set_skytex, StereoKitC), Cvoid, (tex_t,), sky_texture)
 end
 
-# no prototype is found for this function at stereokit.h:845:30, please use with caution
+# no prototype is found for this function at stereokit.h:1355:30, please use with caution
 function render_get_skytex()
     ccall((:render_get_skytex, StereoKitC), tex_t, ())
 end
@@ -1730,7 +1929,7 @@ function render_set_skylight(light_info)
     ccall((:render_set_skylight, StereoKitC), Cvoid, (Ptr{spherical_harmonics_t},), light_info)
 end
 
-# no prototype is found for this function at stereokit.h:847:30, please use with caution
+# no prototype is found for this function at stereokit.h:1357:30, please use with caution
 function render_get_skylight()
     ccall((:render_get_skylight, StereoKitC), spherical_harmonics_t, ())
 end
@@ -1739,7 +1938,7 @@ function render_set_filter(layer_filter)
     ccall((:render_set_filter, StereoKitC), Cvoid, (render_layer_,), layer_filter)
 end
 
-# no prototype is found for this function at stereokit.h:849:30, please use with caution
+# no prototype is found for this function at stereokit.h:1359:30, please use with caution
 function render_get_filter()
     ccall((:render_get_filter, StereoKitC), render_layer_, ())
 end
@@ -1748,12 +1947,12 @@ function render_override_capture_filter(use_override_filter, layer_filter)
     ccall((:render_override_capture_filter, StereoKitC), Cvoid, (bool32_t, render_layer_), use_override_filter, layer_filter)
 end
 
-# no prototype is found for this function at stereokit.h:851:30, please use with caution
+# no prototype is found for this function at stereokit.h:1361:30, please use with caution
 function render_get_capture_filter()
     ccall((:render_get_capture_filter, StereoKitC), render_layer_, ())
 end
 
-# no prototype is found for this function at stereokit.h:852:30, please use with caution
+# no prototype is found for this function at stereokit.h:1362:30, please use with caution
 function render_has_capture_filter()
     ccall((:render_has_capture_filter, StereoKitC), bool32_t, ())
 end
@@ -1762,13 +1961,22 @@ function render_set_clear_color(color_gamma)
     ccall((:render_set_clear_color, StereoKitC), Cvoid, (color128,), color_gamma)
 end
 
+# no prototype is found for this function at stereokit.h:1364:30, please use with caution
+function render_get_clear_color()
+    ccall((:render_get_clear_color, StereoKitC), color128, ())
+end
+
 function render_enable_skytex(show_sky)
     ccall((:render_enable_skytex, StereoKitC), Cvoid, (bool32_t,), show_sky)
 end
 
-# no prototype is found for this function at stereokit.h:855:30, please use with caution
+# no prototype is found for this function at stereokit.h:1366:30, please use with caution
 function render_enabled_skytex()
     ccall((:render_enabled_skytex, StereoKitC), bool32_t, ())
+end
+
+function render_global_texture(register_slot, texture)
+    ccall((:render_global_texture, StereoKitC), Cvoid, (Int32, tex_t), register_slot, texture)
 end
 
 function render_add_mesh(mesh, material, transform, color_linear, layer)
@@ -1791,6 +1999,10 @@ function render_to(to_rendertarget, camera, projection, layer_filter, clear, vie
     ccall((:render_to, StereoKitC), Cvoid, (tex_t, Ptr{matrix}, Ptr{matrix}, render_layer_, render_clear_, rect_t), to_rendertarget, camera, projection, layer_filter, clear, viewport)
 end
 
+function render_material_to(to_rendertarget, override_material, camera, projection, layer_filter, clear, viewport)
+    ccall((:render_material_to, StereoKitC), Cvoid, (tex_t, material_t, Ptr{matrix}, Ptr{matrix}, render_layer_, render_clear_, rect_t), to_rendertarget, override_material, camera, projection, layer_filter, clear, viewport)
+end
+
 function render_get_device(device, context)
     ccall((:render_get_device, StereoKitC), Cvoid, (Ptr{Ptr{Cvoid}}, Ptr{Ptr{Cvoid}}), device, context)
 end
@@ -1799,7 +2011,7 @@ function hierarchy_push(transform)
     ccall((:hierarchy_push, StereoKitC), Cvoid, (Ptr{matrix},), transform)
 end
 
-# no prototype is found for this function at stereokit.h:866:22, please use with caution
+# no prototype is found for this function at stereokit.h:1379:22, please use with caution
 function hierarchy_pop()
     ccall((:hierarchy_pop, StereoKitC), Cvoid, ())
 end
@@ -1808,17 +2020,17 @@ function hierarchy_set_enabled(enabled)
     ccall((:hierarchy_set_enabled, StereoKitC), Cvoid, (bool32_t,), enabled)
 end
 
-# no prototype is found for this function at stereokit.h:868:22, please use with caution
+# no prototype is found for this function at stereokit.h:1381:22, please use with caution
 function hierarchy_is_enabled()
     ccall((:hierarchy_is_enabled, StereoKitC), bool32_t, ())
 end
 
-# no prototype is found for this function at stereokit.h:869:22, please use with caution
+# no prototype is found for this function at stereokit.h:1382:22, please use with caution
 function hierarchy_to_world()
     ccall((:hierarchy_to_world, StereoKitC), Ptr{matrix}, ())
 end
 
-# no prototype is found for this function at stereokit.h:870:22, please use with caution
+# no prototype is found for this function at stereokit.h:1383:22, please use with caution
 function hierarchy_to_local()
     ccall((:hierarchy_to_local, StereoKitC), Ptr{matrix}, ())
 end
@@ -1874,6 +2086,10 @@ end
 
 function sound_create_stream(buffer_duration)
     ccall((:sound_create_stream, StereoKitC), sound_t, (Cfloat,), buffer_duration)
+end
+
+function sound_create_samples(samples_at_48000s, sample_count)
+    ccall((:sound_create_samples, StereoKitC), sound_t, (Ptr{Cfloat}, uint64_t), samples_at_48000s, sample_count)
 end
 
 function sound_generate(_function, duration)
@@ -1940,7 +2156,7 @@ function sound_inst_get_volume(sound_inst)
     ccall((:sound_inst_get_volume, StereoKitC), Cfloat, (sound_inst_t,), sound_inst)
 end
 
-# no prototype is found for this function at stereokit.h:911:21, please use with caution
+# no prototype is found for this function at stereokit.h:1425:21, please use with caution
 function mic_device_count()
     ccall((:mic_device_count, StereoKitC), Int32, ())
 end
@@ -1953,17 +2169,17 @@ function mic_start(device_name)
     ccall((:mic_start, StereoKitC), bool32_t, (Ptr{Cchar},), device_name)
 end
 
-# no prototype is found for this function at stereokit.h:914:21, please use with caution
+# no prototype is found for this function at stereokit.h:1428:21, please use with caution
 function mic_stop()
     ccall((:mic_stop, StereoKitC), Cvoid, ())
 end
 
-# no prototype is found for this function at stereokit.h:915:21, please use with caution
+# no prototype is found for this function at stereokit.h:1429:21, please use with caution
 function mic_get_stream()
     ccall((:mic_get_stream, StereoKitC), sound_t, ())
 end
 
-# no prototype is found for this function at stereokit.h:916:21, please use with caution
+# no prototype is found for this function at stereokit.h:1430:21, please use with caution
 function mic_is_recording()
     ccall((:mic_is_recording, StereoKitC), bool32_t, ())
 end
@@ -1977,26 +2193,55 @@ end
     picker_mode_save = 1
 end
 
+@cenum text_context_::UInt32 begin
+    text_context_text = 1
+    text_context_number = 2
+    text_context_uri = 10
+    text_context_password = 18
+end
+
 function platform_file_picker(mode, callback_data, on_confirm, filters, filter_count)
     ccall((:platform_file_picker, StereoKitC), Cvoid, (picker_mode_, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{file_filter_t}, Int32), mode, callback_data, on_confirm, filters, filter_count)
 end
 
-# no prototype is found for this function at stereokit.h:930:17, please use with caution
+function platform_file_picker_sz(mode, callback_data, on_confirm, filters, filter_count)
+    ccall((:platform_file_picker_sz, StereoKitC), Cvoid, (picker_mode_, Ptr{Cvoid}, Ptr{Cvoid}, Ptr{file_filter_t}, Int32), mode, callback_data, on_confirm, filters, filter_count)
+end
+
+# no prototype is found for this function at stereokit.h:1467:17, please use with caution
 function platform_file_picker_close()
     ccall((:platform_file_picker_close, StereoKitC), Cvoid, ())
 end
 
-# no prototype is found for this function at stereokit.h:931:17, please use with caution
+# no prototype is found for this function at stereokit.h:1468:17, please use with caution
 function platform_file_picker_visible()
     ccall((:platform_file_picker_visible, StereoKitC), bool32_t, ())
 end
 
-function platform_read_file(filename, out_data, out_size)
-    ccall((:platform_read_file, StereoKitC), bool32_t, (Ptr{Cchar}, Ptr{Ptr{Cvoid}}, Ptr{Csize_t}), filename, out_data, out_size)
+function platform_read_file(filename_utf8, out_data, out_size)
+    ccall((:platform_read_file, StereoKitC), bool32_t, (Ptr{Cchar}, Ptr{Ptr{Cvoid}}, Ptr{Csize_t}), filename_utf8, out_data, out_size)
 end
 
-function platform_write_file(filename, data, size)
-    ccall((:platform_write_file, StereoKitC), bool32_t, (Ptr{Cchar}, Ptr{Cvoid}, Csize_t), filename, data, size)
+function platform_write_file(filename_utf8, data, size)
+    ccall((:platform_write_file, StereoKitC), bool32_t, (Ptr{Cchar}, Ptr{Cvoid}, Csize_t), filename_utf8, data, size)
+end
+
+# no prototype is found for this function at stereokit.h:1472:17, please use with caution
+function platform_keyboard_get_force_fallback()
+    ccall((:platform_keyboard_get_force_fallback, StereoKitC), bool32_t, ())
+end
+
+function platform_keyboard_set_force_fallback(force_fallback)
+    ccall((:platform_keyboard_set_force_fallback, StereoKitC), Cvoid, (bool32_t,), force_fallback)
+end
+
+function platform_keyboard_show(visible, type)
+    ccall((:platform_keyboard_show, StereoKitC), Cvoid, (bool32_t, text_context_), visible, type)
+end
+
+# no prototype is found for this function at stereokit.h:1475:17, please use with caution
+function platform_keyboard_visible()
+    ccall((:platform_keyboard_visible, StereoKitC), bool32_t, ())
 end
 
 @cenum input_source_::UInt32 begin
@@ -2023,6 +2268,7 @@ end
     button_state_just_inactive = 2
     button_state_just_active = 4
     button_state_changed = 6
+    button_state_any = 2147483647
 end
 
 @cenum track_state_::UInt32 begin
@@ -2144,6 +2390,28 @@ end
     key_x = 88
     key_y = 89
     key_z = 90
+    key_num0 = 96
+    key_num1 = 97
+    key_num2 = 98
+    key_num3 = 99
+    key_num4 = 100
+    key_num5 = 101
+    key_num6 = 102
+    key_num7 = 103
+    key_num8 = 104
+    key_num9 = 105
+    key_f1 = 112
+    key_f2 = 113
+    key_f3 = 114
+    key_f4 = 115
+    key_f5 = 116
+    key_f6 = 117
+    key_f7 = 118
+    key_f8 = 119
+    key_f9 = 120
+    key_f10 = 121
+    key_f11 = 122
+    key_f12 = 123
     key_comma = 188
     key_period = 190
     key_slash_fwd = 191
@@ -2157,33 +2425,11 @@ end
     key_backtick = 192
     key_lcmd = 91
     key_rcmd = 92
-    key_num0 = 96
-    key_num1 = 97
-    key_num2 = 98
-    key_num3 = 99
-    key_num4 = 100
-    key_num5 = 101
-    key_num6 = 102
-    key_num7 = 103
-    key_num8 = 104
-    key_num9 = 105
     key_multiply = 106
     key_add = 107
     key_subtract = 109
     key_decimal = 110
     key_divide = 111
-    key_f1 = 112
-    key_f2 = 113
-    key_f3 = 114
-    key_f4 = 115
-    key_f5 = 116
-    key_f6 = 117
-    key_f7 = 118
-    key_f8 = 119
-    key_f9 = 120
-    key_f10 = 121
-    key_f11 = 122
-    key_f12 = 123
     key_MAX = 255
 end
 
@@ -2207,27 +2453,27 @@ function input_controller(hand)
     ccall((:input_controller, StereoKitC), Ptr{controller_t}, (handed_,), hand)
 end
 
-# no prototype is found for this function at stereokit.h:1050:30, please use with caution
+# no prototype is found for this function at stereokit.h:1826:30, please use with caution
 function input_controller_menu()
     ccall((:input_controller_menu, StereoKitC), button_state_, ())
 end
 
-# no prototype is found for this function at stereokit.h:1051:30, please use with caution
+# no prototype is found for this function at stereokit.h:1827:30, please use with caution
 function input_head()
     ccall((:input_head, StereoKitC), Ptr{pose_t}, ())
 end
 
-# no prototype is found for this function at stereokit.h:1052:30, please use with caution
+# no prototype is found for this function at stereokit.h:1828:30, please use with caution
 function input_eyes()
     ccall((:input_eyes, StereoKitC), Ptr{pose_t}, ())
 end
 
-# no prototype is found for this function at stereokit.h:1053:30, please use with caution
+# no prototype is found for this function at stereokit.h:1829:30, please use with caution
 function input_eyes_tracked()
     ccall((:input_eyes_tracked, StereoKitC), button_state_, ())
 end
 
-# no prototype is found for this function at stereokit.h:1054:30, please use with caution
+# no prototype is found for this function at stereokit.h:1830:30, please use with caution
 function input_mouse()
     ccall((:input_mouse, StereoKitC), Ptr{mouse_t}, ())
 end
@@ -2236,12 +2482,12 @@ function input_key(key)
     ccall((:input_key, StereoKitC), button_state_, (key_,), key)
 end
 
-# no prototype is found for this function at stereokit.h:1056:30, please use with caution
+# no prototype is found for this function at stereokit.h:1832:30, please use with caution
 function input_text_consume()
     ccall((:input_text_consume, StereoKitC), char32_t, ())
 end
 
-# no prototype is found for this function at stereokit.h:1057:30, please use with caution
+# no prototype is found for this function at stereokit.h:1833:30, please use with caution
 function input_text_reset()
     ccall((:input_text_reset, StereoKitC), Cvoid, ())
 end
@@ -2270,17 +2516,22 @@ function input_fire_event(source, event, pointer)
     ccall((:input_fire_event, StereoKitC), Cvoid, (input_source_, button_state_, Ptr{pointer_t}), source, event, pointer)
 end
 
-# no prototype is found for this function at stereokit.h:1068:19, please use with caution
+@cenum world_refresh_::UInt32 begin
+    world_refresh_area = 0
+    world_refresh_timer = 1
+end
+
+# no prototype is found for this function at stereokit.h:1859:23, please use with caution
 function world_has_bounds()
     ccall((:world_has_bounds, StereoKitC), bool32_t, ())
 end
 
-# no prototype is found for this function at stereokit.h:1069:19, please use with caution
+# no prototype is found for this function at stereokit.h:1860:23, please use with caution
 function world_get_bounds_size()
     ccall((:world_get_bounds_size, StereoKitC), vec2, ())
 end
 
-# no prototype is found for this function at stereokit.h:1070:19, please use with caution
+# no prototype is found for this function at stereokit.h:1861:23, please use with caution
 function world_get_bounds_pose()
     ccall((:world_get_bounds_pose, StereoKitC), pose_t, ())
 end
@@ -2309,7 +2560,7 @@ function world_set_occlusion_enabled(enabled)
     ccall((:world_set_occlusion_enabled, StereoKitC), Cvoid, (bool32_t,), enabled)
 end
 
-# no prototype is found for this function at stereokit.h:1077:19, please use with caution
+# no prototype is found for this function at stereokit.h:1868:23, please use with caution
 function world_get_occlusion_enabled()
     ccall((:world_get_occlusion_enabled, StereoKitC), bool32_t, ())
 end
@@ -2318,7 +2569,7 @@ function world_set_raycast_enabled(enabled)
     ccall((:world_set_raycast_enabled, StereoKitC), Cvoid, (bool32_t,), enabled)
 end
 
-# no prototype is found for this function at stereokit.h:1079:19, please use with caution
+# no prototype is found for this function at stereokit.h:1870:23, please use with caution
 function world_get_raycast_enabled()
     ccall((:world_get_raycast_enabled, StereoKitC), bool32_t, ())
 end
@@ -2327,9 +2578,139 @@ function world_set_occlusion_material(material)
     ccall((:world_set_occlusion_material, StereoKitC), Cvoid, (material_t,), material)
 end
 
-# no prototype is found for this function at stereokit.h:1081:19, please use with caution
+# no prototype is found for this function at stereokit.h:1872:23, please use with caution
 function world_get_occlusion_material()
     ccall((:world_get_occlusion_material, StereoKitC), material_t, ())
+end
+
+function world_set_refresh_type(refresh_type)
+    ccall((:world_set_refresh_type, StereoKitC), Cvoid, (world_refresh_,), refresh_type)
+end
+
+# no prototype is found for this function at stereokit.h:1874:23, please use with caution
+function world_get_refresh_type()
+    ccall((:world_get_refresh_type, StereoKitC), world_refresh_, ())
+end
+
+function world_set_refresh_radius(radius_meters)
+    ccall((:world_set_refresh_radius, StereoKitC), Cvoid, (Cfloat,), radius_meters)
+end
+
+# no prototype is found for this function at stereokit.h:1876:23, please use with caution
+function world_get_refresh_radius()
+    ccall((:world_get_refresh_radius, StereoKitC), Cfloat, ())
+end
+
+function world_set_refresh_interval(every_seconds)
+    ccall((:world_set_refresh_interval, StereoKitC), Cvoid, (Cfloat,), every_seconds)
+end
+
+# no prototype is found for this function at stereokit.h:1878:23, please use with caution
+function world_get_refresh_interval()
+    ccall((:world_get_refresh_interval, StereoKitC), Cfloat, ())
+end
+
+@cenum backend_xr_type_::UInt32 begin
+    backend_xr_type_none = 0
+    backend_xr_type_simulator = 1
+    backend_xr_type_openxr = 2
+    backend_xr_type_webxr = 3
+end
+
+@cenum backend_platform_::UInt32 begin
+    backend_platform_win32 = 0
+    backend_platform_uwp = 1
+    backend_platform_linux = 2
+    backend_platform_android = 3
+    backend_platform_web = 4
+end
+
+@cenum backend_graphics_::UInt32 begin
+    backend_graphics_none = 0
+    backend_graphics_d3d11 = 1
+end
+
+const openxr_handle_t = uint64_t
+
+# no prototype is found for this function at stereokit.h:1926:26, please use with caution
+function backend_xr_get_type()
+    ccall((:backend_xr_get_type, StereoKitC), backend_xr_type_, ())
+end
+
+# no prototype is found for this function at stereokit.h:1927:26, please use with caution
+function backend_openxr_get_instance()
+    ccall((:backend_openxr_get_instance, StereoKitC), openxr_handle_t, ())
+end
+
+# no prototype is found for this function at stereokit.h:1928:26, please use with caution
+function backend_openxr_get_session()
+    ccall((:backend_openxr_get_session, StereoKitC), openxr_handle_t, ())
+end
+
+# no prototype is found for this function at stereokit.h:1929:26, please use with caution
+function backend_openxr_get_space()
+    ccall((:backend_openxr_get_space, StereoKitC), openxr_handle_t, ())
+end
+
+# no prototype is found for this function at stereokit.h:1930:26, please use with caution
+function backend_openxr_get_time()
+    ccall((:backend_openxr_get_time, StereoKitC), Int64, ())
+end
+
+# no prototype is found for this function at stereokit.h:1931:26, please use with caution
+function backend_openxr_get_eyes_sample_time()
+    ccall((:backend_openxr_get_eyes_sample_time, StereoKitC), Int64, ())
+end
+
+function backend_openxr_get_function(function_name)
+    ccall((:backend_openxr_get_function, StereoKitC), Ptr{Cvoid}, (Ptr{Cchar},), function_name)
+end
+
+function backend_openxr_ext_enabled(extension_name)
+    ccall((:backend_openxr_ext_enabled, StereoKitC), bool32_t, (Ptr{Cchar},), extension_name)
+end
+
+function backend_openxr_ext_request(extension_name)
+    ccall((:backend_openxr_ext_request, StereoKitC), Cvoid, (Ptr{Cchar},), extension_name)
+end
+
+function backend_openxr_composition_layer(XrCompositionLayerBaseHeader, layer_size, sort_order)
+    ccall((:backend_openxr_composition_layer, StereoKitC), Cvoid, (Ptr{Cvoid}, Int32, Int32), XrCompositionLayerBaseHeader, layer_size, sort_order)
+end
+
+# no prototype is found for this function at stereokit.h:1937:26, please use with caution
+function backend_platform_get()
+    ccall((:backend_platform_get, StereoKitC), backend_platform_, ())
+end
+
+# no prototype is found for this function at stereokit.h:1938:26, please use with caution
+function backend_android_get_java_vm()
+    ccall((:backend_android_get_java_vm, StereoKitC), Ptr{Cvoid}, ())
+end
+
+# no prototype is found for this function at stereokit.h:1939:26, please use with caution
+function backend_android_get_activity()
+    ccall((:backend_android_get_activity, StereoKitC), Ptr{Cvoid}, ())
+end
+
+# no prototype is found for this function at stereokit.h:1940:26, please use with caution
+function backend_android_get_jni_env()
+    ccall((:backend_android_get_jni_env, StereoKitC), Ptr{Cvoid}, ())
+end
+
+# no prototype is found for this function at stereokit.h:1942:26, please use with caution
+function backend_graphics_get()
+    ccall((:backend_graphics_get, StereoKitC), backend_graphics_, ())
+end
+
+# no prototype is found for this function at stereokit.h:1943:26, please use with caution
+function backend_d3d11_get_d3d_device()
+    ccall((:backend_d3d11_get_d3d_device, StereoKitC), Ptr{Cvoid}, ())
+end
+
+# no prototype is found for this function at stereokit.h:1944:26, please use with caution
+function backend_d3d11_get_d3d_context()
+    ccall((:backend_d3d11_get_d3d_context, StereoKitC), Ptr{Cvoid}, ())
 end
 
 @cenum log_colors_::UInt32 begin
@@ -2377,10 +2758,30 @@ function assets_releaseref_threadsafe(asset)
     ccall((:assets_releaseref_threadsafe, StereoKitC), Cvoid, (Ptr{Cvoid},), asset)
 end
 
+# no prototype is found for this function at stereokit.h:1977:16, please use with caution
+function assets_current_task()
+    ccall((:assets_current_task, StereoKitC), Int32, ())
+end
+
+# no prototype is found for this function at stereokit.h:1978:16, please use with caution
+function assets_total_tasks()
+    ccall((:assets_total_tasks, StereoKitC), Int32, ())
+end
+
+# no prototype is found for this function at stereokit.h:1979:16, please use with caution
+function assets_current_task_priority()
+    ccall((:assets_current_task_priority, StereoKitC), Int32, ())
+end
+
+function assets_block_for_priority(priority)
+    ccall((:assets_block_for_priority, StereoKitC), Cvoid, (Int32,), priority)
+end
+
 @cenum ui_move_::UInt32 begin
     ui_move_exact = 0
     ui_move_face_user = 1
     ui_move_pos_only = 2
+    ui_move_none = 3
 end
 
 @cenum ui_win_::UInt32 begin
@@ -2407,7 +2808,33 @@ end
     ui_vis_window_body_only = 7
     ui_vis_window_head = 8
     ui_vis_window_head_only = 9
-    ui_vis_max = 10
+    ui_vis_separator = 10
+    ui_vis_slider_line = 11
+    ui_vis_slider_push = 12
+    ui_vis_slider_pinch = 13
+    ui_vis_max = 14
+end
+
+@cenum ui_color_::UInt32 begin
+    ui_color_primary = 0
+    ui_color_background = 1
+    ui_color_common = 2
+    ui_color_complement = 3
+    ui_color_text = 4
+    ui_color_max = 5
+end
+
+@cenum ui_pad_::UInt32 begin
+    ui_pad_none = 0
+    ui_pad_inside = 1
+    ui_pad_outside = 2
+end
+
+@cenum ui_btn_layout_::UInt32 begin
+    ui_btn_layout_left = 0
+    ui_btn_layout_right = 1
+    ui_btn_layout_center = 2
+    ui_btn_layout_center_no_text = 3
 end
 
 struct ui_settings_t
@@ -2434,7 +2861,7 @@ function ui_enable_far_interact(enable)
     ccall((:ui_enable_far_interact, StereoKitC), Cvoid, (bool32_t,), enable)
 end
 
-# no prototype is found for this function at stereokit_ui.h:54:17, please use with caution
+# no prototype is found for this function at stereokit_ui.h:81:17, please use with caution
 function ui_far_interact_enabled()
     ccall((:ui_far_interact_enabled, StereoKitC), bool32_t, ())
 end
@@ -2443,77 +2870,75 @@ function ui_settings(settings)
     ccall((:ui_settings, StereoKitC), Cvoid, (ui_settings_t,), settings)
 end
 
+# no prototype is found for this function at stereokit_ui.h:83:17, please use with caution
+function ui_get_padding()
+    ccall((:ui_get_padding, StereoKitC), Cfloat, ())
+end
+
+# no prototype is found for this function at stereokit_ui.h:84:17, please use with caution
+function ui_get_gutter()
+    ccall((:ui_get_gutter, StereoKitC), Cfloat, ())
+end
+
 function ui_set_color(color)
     ccall((:ui_set_color, StereoKitC), Cvoid, (color128,), color)
 end
 
-function ui_set_element_visual(element_visual, mesh, material)
-    ccall((:ui_set_element_visual, StereoKitC), Cvoid, (ui_vis_, mesh_t, material_t), element_visual, mesh, material)
+function ui_set_theme_color(color_type, color_gamma)
+    ccall((:ui_set_theme_color, StereoKitC), Cvoid, (ui_color_, color128), color_type, color_gamma)
+end
+
+function ui_get_theme_color(color_type)
+    ccall((:ui_get_theme_color, StereoKitC), color128, (ui_color_,), color_type)
+end
+
+function ui_set_element_visual(element_visual, mesh, material, min_size)
+    ccall((:ui_set_element_visual, StereoKitC), Cvoid, (ui_vis_, mesh_t, material_t, vec2), element_visual, mesh, material, min_size)
 end
 
 function ui_push_text_style(style)
     ccall((:ui_push_text_style, StereoKitC), Cvoid, (text_style_t,), style)
 end
 
-# no prototype is found for this function at stereokit_ui.h:59:17, please use with caution
+# no prototype is found for this function at stereokit_ui.h:91:17, please use with caution
 function ui_pop_text_style()
     ccall((:ui_pop_text_style, StereoKitC), Cvoid, ())
 end
 
-function ui_layout_area(start, dimensions)
-    ccall((:ui_layout_area, StereoKitC), Cvoid, (vec3, vec2), start, dimensions)
+function ui_push_tint(tint_gamma)
+    ccall((:ui_push_tint, StereoKitC), Cvoid, (color128,), tint_gamma)
 end
 
-# no prototype is found for this function at stereokit_ui.h:62:17, please use with caution
-function ui_layout_remaining()
-    ccall((:ui_layout_remaining, StereoKitC), vec2, ())
+# no prototype is found for this function at stereokit_ui.h:93:17, please use with caution
+function ui_pop_tint()
+    ccall((:ui_pop_tint, StereoKitC), Cvoid, ())
 end
 
-# no prototype is found for this function at stereokit_ui.h:63:17, please use with caution
-function ui_layout_at()
-    ccall((:ui_layout_at, StereoKitC), vec3, ())
+function ui_push_enabled(enabled)
+    ccall((:ui_push_enabled, StereoKitC), Cvoid, (bool32_t,), enabled)
 end
 
-# no prototype is found for this function at stereokit_ui.h:64:17, please use with caution
-function ui_layout_last()
-    ccall((:ui_layout_last, StereoKitC), bounds_t, ())
+# no prototype is found for this function at stereokit_ui.h:95:17, please use with caution
+function ui_pop_enabled()
+    ccall((:ui_pop_enabled, StereoKitC), Cvoid, ())
 end
 
-function ui_layout_reserve(size, add_padding, depth)
-    ccall((:ui_layout_reserve, StereoKitC), bounds_t, (vec2, bool32_t, Cfloat), size, add_padding, depth)
+function ui_push_preserve_keyboard(preserve_keyboard)
+    ccall((:ui_push_preserve_keyboard, StereoKitC), Cvoid, (bool32_t,), preserve_keyboard)
+end
+
+# no prototype is found for this function at stereokit_ui.h:97:17, please use with caution
+function ui_pop_preserve_keyboard()
+    ccall((:ui_pop_preserve_keyboard, StereoKitC), Cvoid, ())
 end
 
 function ui_push_surface(surface_pose, layout_start, layout_dimensions)
     ccall((:ui_push_surface, StereoKitC), Cvoid, (pose_t, vec3, vec2), surface_pose, layout_start, layout_dimensions)
 end
 
-# no prototype is found for this function at stereokit_ui.h:68:17, please use with caution
+# no prototype is found for this function at stereokit_ui.h:99:17, please use with caution
 function ui_pop_surface()
     ccall((:ui_pop_surface, StereoKitC), Cvoid, ())
-end
-
-# no prototype is found for this function at stereokit_ui.h:69:17, please use with caution
-function ui_area_remaining()
-    ccall((:ui_area_remaining, StereoKitC), vec2, ())
-end
-
-# no prototype is found for this function at stereokit_ui.h:70:17, please use with caution
-function ui_nextline()
-    ccall((:ui_nextline, StereoKitC), Cvoid, ())
-end
-
-# no prototype is found for this function at stereokit_ui.h:71:17, please use with caution
-function ui_sameline()
-    ccall((:ui_sameline, StereoKitC), Cvoid, ())
-end
-
-# no prototype is found for this function at stereokit_ui.h:72:17, please use with caution
-function ui_line_height()
-    ccall((:ui_line_height, StereoKitC), Cfloat, ())
-end
-
-function ui_space(space)
-    ccall((:ui_space, StereoKitC), Cvoid, (Cfloat,), space)
 end
 
 function ui_push_id(id)
@@ -2528,7 +2953,7 @@ function ui_push_idi(id)
     ccall((:ui_push_idi, StereoKitC), uint64_t, (Int32,), id)
 end
 
-# no prototype is found for this function at stereokit_ui.h:77:17, please use with caution
+# no prototype is found for this function at stereokit_ui.h:103:17, please use with caution
 function ui_pop_id()
     ccall((:ui_pop_id, StereoKitC), Cvoid, ())
 end
@@ -2539,6 +2964,67 @@ end
 
 function ui_stack_hash_16(string)
     ccall((:ui_stack_hash_16, StereoKitC), uint64_t, (Ptr{char16_t},), string)
+end
+
+function ui_layout_area(start, dimensions)
+    ccall((:ui_layout_area, StereoKitC), Cvoid, (vec3, vec2), start, dimensions)
+end
+
+# no prototype is found for this function at stereokit_ui.h:108:17, please use with caution
+function ui_layout_remaining()
+    ccall((:ui_layout_remaining, StereoKitC), vec2, ())
+end
+
+# no prototype is found for this function at stereokit_ui.h:109:17, please use with caution
+function ui_layout_at()
+    ccall((:ui_layout_at, StereoKitC), vec3, ())
+end
+
+# no prototype is found for this function at stereokit_ui.h:110:17, please use with caution
+function ui_layout_last()
+    ccall((:ui_layout_last, StereoKitC), bounds_t, ())
+end
+
+function ui_layout_reserve(size, add_padding, depth)
+    ccall((:ui_layout_reserve, StereoKitC), bounds_t, (vec2, bool32_t, Cfloat), size, add_padding, depth)
+end
+
+function ui_last_element_hand_used(hand)
+    ccall((:ui_last_element_hand_used, StereoKitC), button_state_, (handed_,), hand)
+end
+
+# no prototype is found for this function at stereokit_ui.h:114:22, please use with caution
+function ui_last_element_active()
+    ccall((:ui_last_element_active, StereoKitC), button_state_, ())
+end
+
+# no prototype is found for this function at stereokit_ui.h:115:22, please use with caution
+function ui_last_element_focused()
+    ccall((:ui_last_element_focused, StereoKitC), button_state_, ())
+end
+
+# no prototype is found for this function at stereokit_ui.h:117:17, please use with caution
+function ui_area_remaining()
+    ccall((:ui_area_remaining, StereoKitC), vec2, ())
+end
+
+# no prototype is found for this function at stereokit_ui.h:118:17, please use with caution
+function ui_nextline()
+    ccall((:ui_nextline, StereoKitC), Cvoid, ())
+end
+
+# no prototype is found for this function at stereokit_ui.h:119:17, please use with caution
+function ui_sameline()
+    ccall((:ui_sameline, StereoKitC), Cvoid, ())
+end
+
+# no prototype is found for this function at stereokit_ui.h:120:17, please use with caution
+function ui_line_height()
+    ccall((:ui_line_height, StereoKitC), Cfloat, ())
+end
+
+function ui_space(space)
+    ccall((:ui_space, StereoKitC), Cvoid, (Cfloat,), space)
 end
 
 function ui_is_interacting(hand)
@@ -2581,6 +3067,14 @@ function ui_button_at_16(text, window_relative_pos, size)
     ccall((:ui_button_at_16, StereoKitC), bool32_t, (Ptr{char16_t}, vec3, vec2), text, window_relative_pos, size)
 end
 
+function ui_button_img_at(text, image, image_layout, window_relative_pos, size)
+    ccall((:ui_button_img_at, StereoKitC), bool32_t, (Ptr{Cchar}, sprite_t, ui_btn_layout_, vec3, vec2), text, image, image_layout, window_relative_pos, size)
+end
+
+function ui_button_img_at_16(text, image, image_layout, window_relative_pos, size)
+    ccall((:ui_button_img_at_16, StereoKitC), bool32_t, (Ptr{char16_t}, sprite_t, ui_btn_layout_, vec3, vec2), text, image, image_layout, window_relative_pos, size)
+end
+
 function ui_button_round_at(text, image, window_relative_pos, diameter)
     ccall((:ui_button_round_at, StereoKitC), bool32_t, (Ptr{Cchar}, sprite_t, vec3, Cfloat), text, image, window_relative_pos, diameter)
 end
@@ -2595,6 +3089,10 @@ end
 
 function ui_toggle_at_16(text, pressed, window_relative_pos, size)
     ccall((:ui_toggle_at_16, StereoKitC), bool32_t, (Ptr{char16_t}, Ptr{bool32_t}, vec3, vec2), text, pressed, window_relative_pos, size)
+end
+
+function ui_progress_bar_at(percent, window_relative_pos, size)
+    ccall((:ui_progress_bar_at, StereoKitC), Cvoid, (Cfloat, vec3, vec2), percent, window_relative_pos, size)
 end
 
 function ui_hslider_at(id, value, min, max, step, window_relative_pos, size, confirm_method)
@@ -2613,7 +3111,7 @@ function ui_hslider_at_f64_16(id, value, min, max, step, window_relative_pos, si
     ccall((:ui_hslider_at_f64_16, StereoKitC), bool32_t, (Ptr{char16_t}, Ptr{Cdouble}, Cdouble, Cdouble, Cdouble, vec3, vec2, ui_confirm_), id, value, min, max, step, window_relative_pos, size, confirm_method)
 end
 
-# no prototype is found for this function at stereokit_ui.h:101:17, please use with caution
+# no prototype is found for this function at stereokit_ui.h:146:17, please use with caution
 function ui_hseparator()
     ccall((:ui_hseparator, StereoKitC), Cvoid, ())
 end
@@ -2662,6 +3160,22 @@ function ui_button_sz_16(text, size)
     ccall((:ui_button_sz_16, StereoKitC), bool32_t, (Ptr{char16_t}, vec2), text, size)
 end
 
+function ui_button_img(text, image, image_layout)
+    ccall((:ui_button_img, StereoKitC), bool32_t, (Ptr{Cchar}, sprite_t, ui_btn_layout_), text, image, image_layout)
+end
+
+function ui_button_img_16(text, image, image_layout)
+    ccall((:ui_button_img_16, StereoKitC), bool32_t, (Ptr{char16_t}, sprite_t, ui_btn_layout_), text, image, image_layout)
+end
+
+function ui_button_img_sz(text, image, image_layout, size)
+    ccall((:ui_button_img_sz, StereoKitC), bool32_t, (Ptr{Cchar}, sprite_t, ui_btn_layout_, vec2), text, image, image_layout, size)
+end
+
+function ui_button_img_sz_16(text, image, image_layout, size)
+    ccall((:ui_button_img_sz_16, StereoKitC), bool32_t, (Ptr{char16_t}, sprite_t, ui_btn_layout_, vec2), text, image, image_layout, size)
+end
+
 function ui_button_round(id, image, diameter)
     ccall((:ui_button_round, StereoKitC), bool32_t, (Ptr{Cchar}, sprite_t, Cfloat), id, image, diameter)
 end
@@ -2690,12 +3204,16 @@ function ui_model(model, ui_size, model_scale)
     ccall((:ui_model, StereoKitC), Cvoid, (model_t, vec2, Cfloat), model, ui_size, model_scale)
 end
 
-function ui_input(id, buffer, buffer_size, size)
-    ccall((:ui_input, StereoKitC), bool32_t, (Ptr{Cchar}, Ptr{Cchar}, Int32, vec2), id, buffer, buffer_size, size)
+function ui_input(id, buffer, buffer_size, size, type)
+    ccall((:ui_input, StereoKitC), bool32_t, (Ptr{Cchar}, Ptr{Cchar}, Int32, vec2, text_context_), id, buffer, buffer_size, size, type)
 end
 
-function ui_input_16(id, buffer, buffer_size, size)
-    ccall((:ui_input_16, StereoKitC), bool32_t, (Ptr{char16_t}, Ptr{char16_t}, Int32, vec2), id, buffer, buffer_size, size)
+function ui_input_16(id, buffer, buffer_size, size, type)
+    ccall((:ui_input_16, StereoKitC), bool32_t, (Ptr{char16_t}, Ptr{char16_t}, Int32, vec2, text_context_), id, buffer, buffer_size, size, type)
+end
+
+function ui_progress_bar(percent, width)
+    ccall((:ui_progress_bar, StereoKitC), Cvoid, (Cfloat, Cfloat), percent, width)
 end
 
 function ui_hslider(id, value, min, max, step, width, confirm_method)
@@ -2722,7 +3240,7 @@ function ui_handle_begin_16(text, movement, handle, draw, move_type)
     ccall((:ui_handle_begin_16, StereoKitC), bool32_t, (Ptr{char16_t}, Ptr{pose_t}, bounds_t, bool32_t, ui_move_), text, movement, handle, draw, move_type)
 end
 
-# no prototype is found for this function at stereokit_ui.h:129:17, please use with caution
+# no prototype is found for this function at stereokit_ui.h:179:17, please use with caution
 function ui_handle_end()
     ccall((:ui_handle_end, StereoKitC), Cvoid, ())
 end
@@ -2735,20 +3253,35 @@ function ui_window_begin_16(text, pose, size, window_type, move_type)
     ccall((:ui_window_begin_16, StereoKitC), Cvoid, (Ptr{char16_t}, Ptr{pose_t}, vec2, ui_win_, ui_move_), text, pose, size, window_type, move_type)
 end
 
-# no prototype is found for this function at stereokit_ui.h:132:17, please use with caution
+# no prototype is found for this function at stereokit_ui.h:182:17, please use with caution
 function ui_window_end()
     ccall((:ui_window_end, StereoKitC), Cvoid, ())
+end
+
+function ui_panel_at(start, size, padding)
+    ccall((:ui_panel_at, StereoKitC), Cvoid, (vec3, vec2, ui_pad_), start, size, padding)
+end
+
+function ui_panel_begin(padding)
+    ccall((:ui_panel_begin, StereoKitC), Cvoid, (ui_pad_,), padding)
+end
+
+# no prototype is found for this function at stereokit_ui.h:186:17, please use with caution
+function ui_panel_end()
+    ccall((:ui_panel_end, StereoKitC), Cvoid, ())
 end
 
 const SK_VERSION_MAJOR = 0
 
 const SK_VERSION_MINOR = 3
 
-const SK_VERSION_PATCH = 4
+const SK_VERSION_PATCH = 6
 
 const SK_VERSION_PRERELEASE = 0
 
 # Skipping MacroDefinition: SK_DEPRECATED __attribute__ ( ( deprecated ) )
+
+# Skipping MacroDefinition: SK_CONST static const
 
 const SK_VERSION_ID = ((uint64_t(SK_VERSION_MAJOR) << 48 | uint64_t(SK_VERSION_MINOR) << 32) | uint64_t(SK_VERSION_PATCH) << 16) | uint64_t(SK_VERSION_PRERELEASE)
 
